@@ -10,6 +10,7 @@ from .utils import generate_unique_pid
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.utils.html import mark_safe
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, phone_number,first_name,last_name, password=None, **extra_fields):
@@ -63,7 +64,11 @@ class User(AbstractBaseUser,PermissionsMixin):
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     other_name = models.CharField(max_length=25,blank=True)
-    email = models.EmailField(unique=True,blank=True)
+    email = models.EmailField(unique=True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    otp_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
+    phone_number_verified = models.BooleanField(default=False)
 
     
     USERNAME_FIELD = 'phone_number'
@@ -116,7 +121,7 @@ class Profile(models.Model):
 
     username_validator = UnicodeUsernameValidator()
 
-    profile_id = models.CharField(max_length=16,default="",blank=True)
+    profile_id = models.CharField(max_length=16,default="",blank=True,editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.OneToOneField(Location, on_delete=models.CASCADE)
     username = models.CharField(max_length=25,unique=True,validators=[username_validator])
@@ -124,14 +129,22 @@ class Profile(models.Model):
     gender = models.CharField(max_length=1,choices=Gender.choices,default="")
     positive_feedback = models.PositiveIntegerField(null=True, editable=False)
     negative_feedback = models.PositiveIntegerField(null=True, editable=False)
+    is_varified = models.BooleanField(default=False)
     # ratings = models.PositiveIntegerField(def editable=False)
 
     def __str__(self) -> str:
         return f'{self.username}'
-
+    
+    def is_verified(self):
+        return f'Verified: {self.is_varified}'
+    
     def save(self,*args, **kwargs):
         code = generate_unique_pid()
         
         if not Profile.objects.filter(profile_id=code).exists():
             self.profile_id = code
         super(Profile,self).save(*args, **kwargs)
+        
+    def profile_picture_tag(self):
+        return mark_safe('<img src="%s" width="50px" height="50px" style="border-radius:8px" />' %(self.profile_picture.url))
+    profile_picture_tag.short_description = 'Picture'

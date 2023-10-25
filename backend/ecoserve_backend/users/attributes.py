@@ -52,5 +52,6 @@ class Local_gov(models.TextChoices):
     pass
 
 class Gender(models.TextChoices):
+    NONE = ""
     MALE = 'M'
     FEMALE = 'F'

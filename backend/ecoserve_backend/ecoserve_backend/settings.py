@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -13,7 +14,7 @@ SECRET_KEY = 'django-insecure-7lhmpj4+n@__!hlnk^-s=grm!_c71(hfg--*-r)p)3*p!g(%d_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -138,11 +139,11 @@ EMAIL_HOST = 'smtp.gmail.com'
 
 EMAIL_HOST_USER = 'sagirmuhammadkabir0@gmail.com' #<paste your gmail account here>
 
-EMAIL_HOST_PASSWORD = 'ueie oszb enxh kspq'  #<paste Google password or app password here>
+EMAIL_HOST_PASSWORD = 'pljgdzgmwuxljfxb'  #<paste Google password or app password here>
 
 EMAIL_PORT = 587
 
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -154,3 +155,6 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

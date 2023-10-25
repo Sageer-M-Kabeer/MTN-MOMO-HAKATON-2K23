@@ -43,7 +43,6 @@ class UserSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True,max_length = 16 , min_length = 5,style = {'input_type':'password'})
     phone_number = PhoneNumberField()
-    # email = serializers.CharField(source='user.email',write_only=True)
 
     class Meta:
         model = User
@@ -59,3 +58,6 @@ class UserLoginSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
 
         return User.objects.create_user(**validated_data)
+    
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=6)

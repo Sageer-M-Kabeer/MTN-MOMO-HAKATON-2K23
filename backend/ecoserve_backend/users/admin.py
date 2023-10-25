@@ -48,7 +48,7 @@ admin.site.register(User,CustomUserAdmin)
 
 
 class CustomProfileAdmin(admin.ModelAdmin):
-    list_display=['profile_id']
+    list_display=['profile_picture_tag','username','gender','is_varified']
 admin.site.register(Profile,CustomProfileAdmin)
 
 class LocationAdmin(admin.ModelAdmin):
