@@ -50,3 +50,7 @@ admin.site.register(User,CustomUserAdmin)
 class CustomProfileAdmin(admin.ModelAdmin):
     list_display=['profile_id']
 admin.site.register(Profile,CustomProfileAdmin)
+
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ['id','country','state']
+admin.site.register(Location,LocationAdmin)

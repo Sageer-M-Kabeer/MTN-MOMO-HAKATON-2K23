@@ -7,7 +7,9 @@ from django.core.validators import RegexValidator
 import phonenumbers 
 from phonenumbers import carrier 
 from .utils import generate_unique_pid
-
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, phone_number,first_name,last_name, password=None, **extra_fields):
@@ -49,7 +51,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser,PermissionsMixin):
     phonenumber_regex = RegexValidator(regex=r'^\+\d{12}$')
-    phone_number = models.CharField(max_length=11,unique=True,
+    phone_number = models.CharField(max_length=15,unique=True,
                                 validators=[phonenumber_regex], 
                                 error_messages={'unique': ("A user with that phone number already exists."),},)
     slug = models.SlugField(max_length=255, unique=True, null=True, blank=True)
@@ -92,12 +94,12 @@ class User(AbstractBaseUser,PermissionsMixin):
         return Carrier
 
     
-    # @property
-    # def token(self):
-    #     token = jwt.encode({"phone_number":self.phone_number,"exp":datetime.utcnow() + timedelta(hours=24)}
-    #                        ,settings.SECRET_KEY,algorithm='HS256')
+    @property
+    def token(self):
+        token = jwt.encode({"phone_number":self.phone_number,"exp":datetime.utcnow() + timedelta(hours=24)}
+                           ,settings.SECRET_KEY,algorithm='HS256')
         
-    #     return token
+        return token
 
 
 
@@ -106,6 +108,9 @@ class Location(models.Model):
     state = models.CharField(max_length=10, choices=State.choices)
     city = models.CharField(max_length=10, choices=City.choices)
     address = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f'{self.country}:{self.state}:{self.city}'
 
 class Profile(models.Model):
 
@@ -117,9 +122,12 @@ class Profile(models.Model):
     username = models.CharField(max_length=25,unique=True,validators=[username_validator])
     profile_picture = models.ImageField(upload_to="",blank=True,null=True)
     gender = models.CharField(max_length=1,choices=Gender.choices,default="")
-    positive_feedback = models.PositiveIntegerField(editable=False)
-    negative_feedback = models.PositiveIntegerField(editable=False)
-    ratings = models.PositiveIntegerField(editable=False)
+    positive_feedback = models.PositiveIntegerField(null=True, editable=False)
+    negative_feedback = models.PositiveIntegerField(null=True, editable=False)
+    # ratings = models.PositiveIntegerField(def editable=False)
+
+    def __str__(self) -> str:
+        return f'{self.username}'
 
     def save(self,*args, **kwargs):
         code = generate_unique_pid()
